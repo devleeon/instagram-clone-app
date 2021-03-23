@@ -1,60 +1,56 @@
-import { FontAwesome } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
+import { NavigationContainer } from "@react-navigation/native";
 import AppLoading from "expo-app-loading";
 import { Asset } from "expo-asset";
 import * as Font from "expo-font";
-import React, { useEffect, useState } from "react";
-import { InMemoryCache, ApolloClient, ApolloProvider } from "@apollo/client";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import ApolloClientOptions from "./Apollo";
-import { persistCache, AsyncStorageWrapper } from "apollo3-cache-persist";
-import { ThemeProvider } from "styled-components";
-import { theme } from "./styles";
-import Nav from "./components/Nav";
-import { AuthProvider } from "./AuthContext";
+import React, { useState } from "react";
+import "react-native-gesture-handler";
+import AuthNavigation from "./navigation/AuthNavigation";
+import { Appearance, AppearanceProvider } from "react-native-appearance";
+import { ThemeProvider } from "styled-components/native";
+import { dark, light } from "./styles";
+
 export default function App() {
-  const [loaded, setLoaded] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [client, setClient] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(null);
-
+  const [darkMode, setDarkMode] = useState(
+    Appearance.getColorScheme() === "dark"
+  );
+  const onFinish = () => setLoading(false);
   const preloading = async () => {
-    try {
-      await Font.loadAsync({
-        ...FontAwesome.font,
-      });
-      await Asset.loadAsync([require("./assets/logo.png")]);
-      const cache = new InMemoryCache();
-      await persistCache({
-        cache,
-        storage: new AsyncStorageWrapper(AsyncStorage),
-      });
-      const client = new ApolloClient({
-        cache,
-        ...ApolloClientOptions,
-      });
-      const isLoggedIn = AsyncStorage.getItem("isLoggedIn");
-      if (isLoggedIn === null || isLoggedIn === false) {
-        setIsLoggedIn(false);
-      } else {
-        setIsLoggedIn(true);
-      }
-      setClient(client);
-      setLoaded(true);
-    } catch (e) {
-      console.log(e);
-    }
+    const fonts = [Ionicons.font];
+    const fontPromises = fonts.map((font) => Font.loadAsync(font));
+
+    const images = [
+      require("./assets/logo.png"),
+      require("./assets/logo_white.png"),
+    ];
+    const imagePromises = images.map((image) => Asset.loadAsync(image));
+    return Promise.all([...fontPromises, ...imagePromises]);
   };
-  useEffect(() => {
-    preloading();
-  }, []);
-  return loaded && client && isLoggedIn !== null ? (
-    <ApolloProvider client={client}>
-      <ThemeProvider theme={theme}>
-        <AuthProvider isLoggedIn={isLoggedIn}>
-          <Nav />
-        </AuthProvider>
-      </ThemeProvider>
-    </ApolloProvider>
+
+  Appearance.addChangeListener(({ colorScheme }) => {
+    if (colorScheme === "dark") {
+      setDarkMode(true);
+    } else {
+      setDarkMode(false);
+    }
+  });
+
+  return loading ? (
+    <AppLoading
+      onError={console.warn}
+      startAsync={preloading}
+      onFinish={onFinish}
+    />
   ) : (
-    <AppLoading />
+    <AppearanceProvider>
+      <ThemeProvider theme={darkMode ? dark : light}>
+        <NavigationContainer>
+          <AuthNavigation />
+        </NavigationContainer>
+      </ThemeProvider>
+    </AppearanceProvider>
   );
 }
