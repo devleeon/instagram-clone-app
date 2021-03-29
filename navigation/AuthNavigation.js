@@ -17,12 +17,18 @@ const AuthNavigation = () => {
       <Stack.Screen
         name="Login"
         component={Login}
-        options={{ title: "Login" }}
+        options={{
+          headerBackTitleVisible: false,
+          headerTitle: false,
+          headerTransparent: true,
+          headerTintColor: "white",
+        }}
       />
       <Stack.Screen
         name="Signup"
         component={Signup}
         options={{
+          headerBackTitleVisible: false,
           headerTitle: false,
           headerTransparent: true,
           headerTintColor: "white",

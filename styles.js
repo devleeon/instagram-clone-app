@@ -11,6 +11,7 @@ export const light = {
 };
 export const dark = {
   background: "black",
+  input: "#222222",
   text: "white",
   blue: "#0095f6",
 };

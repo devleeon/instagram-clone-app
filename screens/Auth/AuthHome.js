@@ -1,28 +1,13 @@
 import React from "react";
-import { TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
+import { Container, Logo } from "./SharedStyles";
 
-const Container = styled.View`
-  justify-content: center;
-  align-items: center;
-  flex: 1;
-  background-color: ${(props) => {
-    return props.theme.background;
-  }};
-`;
-
-const NativeText = styled.Text`
-  color: ${(props) => props.theme.text};
-  margin-bottom: 10px;
-`;
-const Logo = styled.Image`
-  max-width: 50%;
-  height: 260px;
-`;
 const SignUp = styled.TouchableOpacity`
-  padding: 5px 10px;
+  width: 90%;
+  height: 45px;
   border-radius: 5px;
   justify-content: center;
+  margin-bottom: 10px;
   background-color: ${(props) => {
     return props.theme.blue;
   }};
@@ -30,6 +15,19 @@ const SignUp = styled.TouchableOpacity`
 
 const SignUpText = styled.Text`
   color: ${(props) => props.theme.text};
+  text-align: center;
+`;
+
+const LogIn = styled.TouchableOpacity`
+  width: 90%;
+  height: 45px;
+  border-radius: 5px;
+  justify-content: center;
+`;
+
+const LogInText = styled.Text`
+  color: ${(props) => props.theme.blue};
+  text-align: center;
 `;
 export default ({ navigation }) => {
   const sendToLogIn = () => navigation.navigate("Login");
@@ -40,12 +38,12 @@ export default ({ navigation }) => {
         source={require("../../assets/logo_white.png")}
         resizeMode="contain"
       />
-      <TouchableOpacity onPress={sendToLogIn}>
-        <NativeText>Go to Login</NativeText>
-      </TouchableOpacity>
       <SignUp onPress={sendToSignUp}>
-        <SignUpText>Go to Signup</SignUpText>
+        <SignUpText>Create a New Account</SignUpText>
       </SignUp>
+      <LogIn onPress={sendToLogIn}>
+        <LogInText>Log In</LogInText>
+      </LogIn>
     </Container>
   );
 };
